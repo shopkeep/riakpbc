@@ -14,24 +14,24 @@ const (
 )
 
 type Pool struct {
-	nodes map[string]*Node // index the node with its address string
+	nodes []*Node
 	sync.Mutex
 }
 
 // NewPool returns an instantiated pool given a slice of node addresses.
 func NewPool(cluster []string) *Pool {
 	rand.Seed(time.Now().UTC().UnixNano())
-	nodeMap := make(map[string]*Node, len(cluster))
+	nodes := make([]*Node, len(cluster))
 
-	for _, node := range cluster {
+	for i, node := range cluster {
 		newNode, err := NewNode(node, NODE_READ_RETRY, NODE_WRITE_RETRY)
 		if err == nil {
-			nodeMap[node] = newNode
+			nodes[i] = newNode
 		}
 	}
 
 	pool := &Pool{
-		nodes: nodeMap,
+		nodes: nodes,
 	}
 
 	return pool
